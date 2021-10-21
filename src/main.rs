@@ -95,19 +95,31 @@ fn make_morse_code(msg: &str) -> Vec<u64> {
 
 fn main() {
     let mut print = false;
+    let mut  get_msg = false;
+    let mut msg: Option<String> = None;
     for arg in args() {
         if arg == "--print" || arg == "-p" {
             print = true;
+        } else if arg == "--msg" || arg == "-m" {
+            get_msg = true;
+        }
+        if get_msg {
+            msg = Some(arg);
         }
     }
 
     if print {
         morse_printer::print_morse_values();
     } else {
-        let msg = "this is a long string to encode";
-        let morse_code = make_morse_code(&msg);
-        let new_msg = unpack_morse_code(morse_code);
+        if let Some(msg) = msg {
+            let morse_code = make_morse_code(&msg);
+            for num in &morse_code {
+                print!("{:b}", num);
+            }
+            println!();
+            let new_msg = unpack_morse_code(morse_code);
 
-        println!(">{}<", new_msg.chars().rev().collect::<String>());
+            println!(">{}<", new_msg.chars().rev().collect::<String>());
+        }
     }
 }
