@@ -105,6 +105,7 @@ fn main() {
         }
         if get_msg {
             msg = Some(arg);
+            get_msg = false;
         }
     }
 
