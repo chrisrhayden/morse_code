@@ -88,9 +88,26 @@ fn morse_to_ascii_print(msg: &str) {
     println!("        _ => unreachable!()\n    {}\n{}", "}", "}");
 }
 
-pub fn print_morse_values() {
+pub fn print_morse_key() {
     let word = "abcdefghijklmnopqrstuvwxyz ";
     ascii_to_morse_print(&word);
     println!();
     morse_to_ascii_print(&word);
+}
+
+pub fn print_morse_code(code: &[u64], message: &str) {
+    print!("number = [");
+    for (i, num) in code.iter().enumerate() {
+        if i != code.len() - 1 {
+            print!("{},", num);
+        } else {
+            print!("{}", num);
+        }
+    }
+    print!("]\nbinary = ");
+
+    for num in code {
+        print!("{:b}", num);
+    }
+    println!("\nmessage = {}", message.chars().rev().collect::<String>());
 }
