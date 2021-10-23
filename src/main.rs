@@ -84,7 +84,7 @@ fn make_morse_code(msg: &str) -> Vec<u64> {
                 || (c_ascii > 91 && c_ascii < 97))
         {
             eprintln!("skipping bad char {}", c);
-            break;
+            continue;
         } else if c_ascii != 32 && c_ascii < 97 {
             c_ascii += 32;
         }
@@ -145,6 +145,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         print_morse_key();
     }
+
     if let Some(msg) = arg_options.message {
         if cfg!(debug_assertions) {
             dbg!(&msg);
