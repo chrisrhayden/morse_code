@@ -27,7 +27,7 @@ pub fn ascii_to_morse(c: char) -> (u64, u64) {
         'y' => (239, 8),
         'z' => (250, 8),
         ' ' => (0, 2),
-        _ => unreachable!(),
+        _ => panic!("got bad char {}", c),
     }
 }
 
@@ -60,6 +60,6 @@ pub fn morse_to_ascii(code: u64) -> char {
         239 => 'y',
         250 => 'z',
         0 => ' ',
-        _ => unreachable!(),
+        _ => panic!("bad morse value"),
     }
 }

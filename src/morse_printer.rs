@@ -58,7 +58,7 @@ fn ascii_to_morse(c: char) -> Vec<Morse> {
         'y' => vec![Morse::Dah, Morse::Dit, Morse::Dah, Morse::Dah],
         'z' => vec![Morse::Dah, Morse::Dah, Morse::Dit, Morse::Dit],
         ' ' => vec![Morse::Space],
-        _ => unreachable!(),
+        _ => panic!("bad char {}", c),
     }
 }
 
@@ -72,7 +72,10 @@ fn ascii_to_morse_print(msg: &str) {
         let (packed_morse, offset) = pack_morse(&morse_value);
         println!("        '{}' => ({}, {}),", c, packed_morse, offset);
     }
-    println!("        _ => unreachable!()\n    {}\n{}", "}", "}");
+    println!(
+        "        _ => panic!(\"bad char {}\", c)\n    {}\n{}",
+        "{}", "}", "}"
+    );
 }
 
 fn morse_to_ascii_print(msg: &str) {
@@ -85,7 +88,10 @@ fn morse_to_ascii_print(msg: &str) {
         let (packed_morse, _) = pack_morse(&morse_value);
         println!("        {:3} => '{}',", packed_morse, c);
     }
-    println!("        _ => unreachable!()\n    {}\n{}", "}", "}");
+    println!(
+        "        _ => panic!(\"bad morse value {}\", code)\n    {}\n{}",
+        "{}", "}", "}"
+    );
 }
 
 pub fn print_morse_key() {
