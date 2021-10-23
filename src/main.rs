@@ -81,12 +81,18 @@ fn make_morse_code(msg: &str) -> Vec<u64> {
         let mut c_ascii = c as u32;
         if c_ascii != 32
             && ((c_ascii < 65 || c_ascii > 122)
-                || (c_ascii > 91 && c_ascii < 97))
+                || (c_ascii > 90 && c_ascii < 97))
         {
-            eprintln!("skipping bad char {}", c);
+            if cfg!(debug_assertions) {
+                dbg!("skipping bad char {} -- value {}", c, c_ascii);
+            }
             continue;
         } else if c_ascii != 32 && c_ascii < 97 {
             c_ascii += 32;
+        }
+
+        if cfg!(debug_assertions) {
+            dbg!("adding {}", c);
         }
 
         let (morse_value, offset) = ascii_to_morse(from_u32(c_ascii).unwrap());
