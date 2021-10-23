@@ -3,7 +3,7 @@
 mod morse_code_key;
 mod morse_printer;
 
-use std::{env::args, error::Error};
+use std::{char::from_u32, env::args, error::Error};
 
 use morse_code_key::{ascii_to_morse, morse_to_ascii};
 use morse_printer::{print_morse_code, print_morse_key};
@@ -78,7 +78,18 @@ fn make_morse_code(msg: &str) -> Vec<u64> {
     let mut code = &mut morse_code[indx];
 
     for c in msg.chars() {
-        let (morse_value, offset) = ascii_to_morse(c);
+        let mut c_ascii = c as u32;
+        if c_ascii != 32
+            && ((c_ascii < 65 || c_ascii > 122)
+                || (c_ascii > 91 && c_ascii < 97))
+        {
+            eprintln!("skipping bad char {}", c);
+            break;
+        } else if c_ascii != 32 && c_ascii < 97 {
+            c_ascii += 32;
+        }
+
+        let (morse_value, offset) = ascii_to_morse(from_u32(c_ascii).unwrap());
 
         if *code << offset & mask > 0 {
             morse_code.push(0);
