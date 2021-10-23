@@ -102,15 +102,15 @@ pub fn print_morse_key() {
 }
 
 pub fn print_morse_code(code: &[u64], message: &str) {
-    print!("number = [");
+    print!("number  = [");
     for (i, num) in code.iter().enumerate() {
         if i != code.len() - 1 {
-            print!("{},", num);
+            print!("{}, ", num);
         } else {
             print!("{}", num);
         }
     }
-    print!("]\nbinary = ");
+    print!("]\nbinary  = ");
 
     for num in code {
         print!("{:b}", num);
