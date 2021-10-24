@@ -1,3 +1,5 @@
+use crate::morse_printer::Morse;
+
 pub fn ascii_to_morse(c: char) -> (u64, u64) {
     match c {
         'a' => (11, 4),
@@ -61,5 +63,38 @@ pub fn morse_to_ascii(code: u64) -> char {
         250 => 'z',
         0 => ' ',
         _ => panic!("bad morse value"),
+    }
+}
+
+pub fn binary_to_morse_key(code: u64) -> Vec<Morse> {
+    match code {
+        11 => vec![Morse::Dit, Morse::Dah],
+        234 => vec![Morse::Dah, Morse::Dit, Morse::Dit, Morse::Dit],
+        238 => vec![Morse::Dah, Morse::Dit, Morse::Dah, Morse::Dit],
+        58 => vec![Morse::Dah, Morse::Dit, Morse::Dit],
+        2 => vec![Morse::Dit],
+        174 => vec![Morse::Dit, Morse::Dit, Morse::Dah, Morse::Dit],
+        62 => vec![Morse::Dah, Morse::Dah, Morse::Dit],
+        170 => vec![Morse::Dit, Morse::Dit, Morse::Dit, Morse::Dit],
+        10 => vec![Morse::Dit, Morse::Dit],
+        191 => vec![Morse::Dit, Morse::Dah, Morse::Dah, Morse::Dah],
+        59 => vec![Morse::Dah, Morse::Dit, Morse::Dah],
+        186 => vec![Morse::Dit, Morse::Dah, Morse::Dit, Morse::Dit],
+        15 => vec![Morse::Dah, Morse::Dah],
+        14 => vec![Morse::Dah, Morse::Dit],
+        63 => vec![Morse::Dah, Morse::Dah, Morse::Dah],
+        190 => vec![Morse::Dit, Morse::Dah, Morse::Dah, Morse::Dit],
+        251 => vec![Morse::Dah, Morse::Dah, Morse::Dit, Morse::Dah],
+        46 => vec![Morse::Dit, Morse::Dah, Morse::Dit],
+        42 => vec![Morse::Dit, Morse::Dit, Morse::Dit],
+        3 => vec![Morse::Dah],
+        43 => vec![Morse::Dit, Morse::Dit, Morse::Dah],
+        171 => vec![Morse::Dit, Morse::Dit, Morse::Dit, Morse::Dah],
+        47 => vec![Morse::Dit, Morse::Dah, Morse::Dah],
+        235 => vec![Morse::Dah, Morse::Dit, Morse::Dit, Morse::Dah],
+        239 => vec![Morse::Dah, Morse::Dit, Morse::Dah, Morse::Dah],
+        250 => vec![Morse::Dah, Morse::Dah, Morse::Dit, Morse::Dit],
+        0 => vec![Morse::Space],
+        _ => panic!("bad morse value {}", code),
     }
 }
