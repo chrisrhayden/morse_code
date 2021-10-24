@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-mod morse_code_key;
-mod morse_printer;
+pub mod morse_code_key;
+pub mod morse_printer;
 
 use std::{char::from_u32, env::args, error::Error};
 
@@ -10,6 +10,7 @@ use morse_printer::{print_morse_code, print_morse_key};
 
 struct Args {
     print_key: bool,
+    help_menu: bool,
     message: Option<String>,
 }
 
@@ -17,6 +18,7 @@ impl Default for Args {
     fn default() -> Self {
         Self {
             print_key: false,
+            help_menu: false,
             message: None,
         }
     }
@@ -91,10 +93,6 @@ fn make_morse_code(msg: &str) -> Vec<u64> {
             c_ascii += 32;
         }
 
-        if cfg!(debug_assertions) {
-            dbg!("adding {}", c);
-        }
-
         let (morse_value, offset) = ascii_to_morse(from_u32(c_ascii).unwrap());
 
         if *code << offset & mask > 0 {
@@ -122,7 +120,10 @@ fn parse_args() -> Result<Args, Box<dyn Error>> {
             dbg!(&arg);
         }
 
-        if arg == "--print-key" || arg == "-k" {
+        if arg == "--help" || arg == "-h" {
+            arg_options.help_menu = true;
+            break;
+        } else if arg == "--print-key" || arg == "-k" {
             arg_options.print_key = true;
         } else if arg == "--msg" || arg == "-m" {
             get_msg = true;
@@ -141,8 +142,23 @@ fn parse_args() -> Result<Args, Box<dyn Error>> {
     }
 }
 
+fn print_menu() {
+    let menu = r#"morse code [en|de]coder
+    --help      | -h    print this help menu and quit
+    --print-key | -k    print out the morse code keys to be use in this program
+    --message   | -m    the message to [en|de]code"#;
+
+    println!("{}", menu);
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let arg_options = parse_args()?;
+
+    if arg_options.help_menu {
+        print_menu();
+
+        return Ok(());
+    }
 
     if arg_options.print_key {
         if cfg!(debug_assertions) {
