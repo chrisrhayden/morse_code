@@ -1,5 +1,9 @@
+use std::fmt::Display;
+
+use crate::morse_code_key::binary_to_morse_key;
+
 #[derive(Debug, Clone)]
-enum Morse {
+pub enum Morse {
     Dit,
     Dah,
     Space,
@@ -12,6 +16,18 @@ impl Morse {
             Morse::Dah => 3,
             Morse::Space => 0,
         }
+    }
+}
+
+impl Display for Morse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let morse_str = match self {
+            Morse::Dit => "Dit",
+            Morse::Dah => "Dah",
+            Morse::Space => "Space",
+        };
+
+        f.write_str(morse_str)
     }
 }
 
@@ -94,14 +110,98 @@ fn morse_to_ascii_print(msg: &str) {
     );
 }
 
+fn binary_morse_to_enum_morse(msg: &str) {
+    println!(
+        "pub fn binary_to_morse_key(code: u64) -> Vec<Morse> {}\n    match code {}",
+        "{", "{"
+    );
+    for c in msg.chars() {
+        let morse_value = ascii_to_morse(c);
+        let (packed_morse, _) = pack_morse(&morse_value);
+        print!("        {:3} => vec![", packed_morse);
+        for (i, letter_code) in morse_value.iter().enumerate() {
+            if i != morse_value.len() - 1 {
+                print!("Morse::{}, ", letter_code);
+            } else {
+                print!("Morse::{}", letter_code);
+            }
+        }
+
+        println!("],");
+    }
+    println!(
+        "          _ => panic!(\"bad morse value {}\", code)\n    {}\n{}",
+        "{}", "}", "}"
+    );
+}
+
 pub fn print_morse_key() {
     let word = "abcdefghijklmnopqrstuvwxyz ";
     ascii_to_morse_print(&word);
     println!();
     morse_to_ascii_print(&word);
+    println!();
+    binary_morse_to_enum_morse(&word);
 }
 
-pub fn print_morse_code(code: &[u64], message: &str) {
+fn unpack_to_individual_codes(code: &[u64]) -> Vec<u64> {
+    let mask = 0b11;
+
+    let mut letter: Vec<u64> = vec![];
+
+    let mut codes: Vec<u64> = vec![];
+
+    for num in code.iter().rev() {
+        let mut num = num.clone();
+
+        while num != 0 {
+            let sequence = num & mask;
+
+            num >>= 2;
+
+            if sequence == 0b01 {
+                if !letter.is_empty() {
+                    let mut whole_letter = 0;
+
+                    for l_num in letter.iter().rev() {
+                        whole_letter <<= 2;
+                        whole_letter += l_num;
+                    }
+
+                    codes.push(whole_letter);
+
+                    letter.clear();
+                }
+            } else {
+                letter.push(sequence);
+            }
+        }
+
+        if !letter.is_empty() {
+            let mut whole_letter = 0;
+
+            for l_num in letter.iter().rev() {
+                whole_letter <<= 2;
+                whole_letter += l_num;
+            }
+
+            codes.push(whole_letter);
+            letter.clear();
+        }
+    }
+
+    codes.into_iter().rev().collect::<Vec<u64>>()
+}
+
+fn print_code_as_group(letters: &[u64]) {
+    print!("binary  = ");
+    for num in letters.iter() {
+        print!("{:08b} ", num)
+    }
+    println!();
+}
+
+fn print_code_as_number(code: &[u64]) {
     print!("number  = [");
     for (i, num) in code.iter().enumerate() {
         if i != code.len() - 1 {
@@ -110,10 +210,38 @@ pub fn print_morse_code(code: &[u64], message: &str) {
             print!("{}", num);
         }
     }
-    print!("]\nbinary  = ");
+    println!("]");
+}
 
-    for num in code {
-        print!("{:b}", num);
+fn print_as_readable_code(letters: &[u64]) {
+    print!("morse   = ");
+    for (i, num) in letters.iter().enumerate() {
+        let morse_vec = binary_to_morse_key(*num);
+
+        print!("[");
+        for (j, value) in morse_vec.iter().enumerate() {
+            if j != morse_vec.len() - 1 {
+                print!("{}, ", value);
+            } else {
+                print!("{}", value);
+            }
+        }
+
+        if i != letters.len() - 1 {
+            print!("], ");
+        } else {
+            print!("]");
+        }
     }
-    println!("\nmessage = {}", message.chars().rev().collect::<String>());
+
+    println!();
+}
+
+pub fn print_morse_code(code: &[u64], message: &str) {
+    print_code_as_number(code);
+    let letters = unpack_to_individual_codes(code);
+    print_code_as_group(&letters);
+    print_as_readable_code(&letters);
+
+    println!("message = {}", message.chars().rev().collect::<String>());
 }
