@@ -194,14 +194,6 @@ fn unpack_to_individual_codes(code: &[u64]) -> Vec<u64> {
     codes
 }
 
-fn print_code_as_group(letters: &[u64]) {
-    print!("binary  = ");
-    for num in letters.iter() {
-        print!("{:08b} ", num)
-    }
-    println!();
-}
-
 fn print_code_as_number(code: &[u64]) {
     print!("number  = [");
     for (i, num) in code.iter().enumerate() {
@@ -212,6 +204,14 @@ fn print_code_as_number(code: &[u64]) {
         }
     }
     println!("]");
+}
+
+fn print_code_as_groups(letters: &[u64]) {
+    print!("binary  = ");
+    for num in letters.iter() {
+        print!("{:08b} ", num)
+    }
+    println!();
 }
 
 fn print_as_readable_code(letters: &[u64]) {
@@ -241,10 +241,11 @@ fn print_as_readable_code(letters: &[u64]) {
 pub fn print_morse_code(code: &[u64], message: &str) {
     print_code_as_number(code);
 
-    let letters = unpack_to_individual_codes(code);
+    let individual_codes = unpack_to_individual_codes(code);
 
-    print_code_as_group(&letters);
-    print_as_readable_code(&letters);
+    print_code_as_groups(&individual_codes);
 
-    println!("message = {}", message.chars().rev().collect::<String>());
+    print_as_readable_code(&individual_codes);
+
+    println!("message = {}", message);
 }

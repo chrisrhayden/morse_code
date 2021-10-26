@@ -24,6 +24,12 @@ impl Default for Args {
     }
 }
 
+impl Args {
+    fn has_value(&self) -> bool {
+        self.print_key || self.help_menu || self.message.is_some()
+    }
+}
+
 fn convert_to_ascii(morse_char: &[u64]) -> char {
     let mut morse_char_value = 0;
 
@@ -67,7 +73,7 @@ fn unpack_morse_code(code_vec: &[u64]) -> String {
         }
     }
 
-    message
+    message.chars().rev().collect::<String>()
 }
 
 fn make_morse_code(msg: &str) -> Vec<u64> {
@@ -85,9 +91,6 @@ fn make_morse_code(msg: &str) -> Vec<u64> {
             && ((c_ascii < 65 || c_ascii > 122)
                 || (c_ascii > 90 && c_ascii < 97))
         {
-            if cfg!(debug_assertions) {
-                dbg!("skipping bad char {} -- value {}", c, c_ascii);
-            }
             continue;
         } else if c_ascii != 32 && c_ascii < 97 {
             c_ascii += 32;
@@ -116,10 +119,6 @@ fn parse_args() -> Result<Args, Box<dyn Error>> {
     let mut get_msg = false;
 
     for arg in args().skip(1) {
-        if cfg!(debug_assertions) {
-            dbg!(&arg);
-        }
-
         if arg == "--help" || arg == "-h" {
             arg_options.help_menu = true;
             break;
@@ -135,20 +134,20 @@ fn parse_args() -> Result<Args, Box<dyn Error>> {
         }
     }
 
-    if !arg_options.print_key && arg_options.message.is_none() {
-        Err(Box::from(String::from("did not get arguments")))
-    } else {
+    if arg_options.has_value() {
         Ok(arg_options)
+    } else {
+        Err(Box::from(String::from("did not get arguments")))
     }
 }
 
 fn print_menu() {
-    let menu = r#"morse code [en|de]coder
+    println!(
+        r#"morse code [en|de]coder
     --help      | -h    print this help menu and quit
     --print-key | -k    print out the morse code keys to be use in this program
-    --message   | -m    the message to [en|de]code"#;
-
-    println!("{}", menu);
+    --message   | -m    the message to [en|de]code"#
+    );
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -161,18 +160,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if arg_options.print_key {
-        if cfg!(debug_assertions) {
-            dbg!("print morse code key");
-        }
-
         print_morse_key();
     }
 
     if let Some(msg) = arg_options.message {
-        if cfg!(debug_assertions) {
-            dbg!(&msg);
-        }
-
         let morse_code = make_morse_code(&msg);
         let decoded_msg = unpack_morse_code(&morse_code);
         print_morse_code(&morse_code, &decoded_msg);
