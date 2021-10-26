@@ -190,7 +190,8 @@ fn unpack_to_individual_codes(code: &[u64]) -> Vec<u64> {
         }
     }
 
-    codes.into_iter().rev().collect::<Vec<u64>>()
+    codes.reverse();
+    codes
 }
 
 fn print_code_as_group(letters: &[u64]) {
@@ -239,7 +240,9 @@ fn print_as_readable_code(letters: &[u64]) {
 
 pub fn print_morse_code(code: &[u64], message: &str) {
     print_code_as_number(code);
+
     let letters = unpack_to_individual_codes(code);
+
     print_code_as_group(&letters);
     print_as_readable_code(&letters);
 
